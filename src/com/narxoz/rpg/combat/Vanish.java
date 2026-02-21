@@ -1,9 +1,24 @@
 package com.narxoz.rpg.combat;
 
-public class Vanish extends AbstractAbility {
+public class Vanish implements Ability {
 
-    public Vanish() {
-        super("Vanish", 0, "Allows the user to vanish into shadows, increasing evasion.");
+    @Override
+    public String getName() {
+        return "Исчезновение";
     }
 
+    @Override
+    public int getDamage() {
+        return 0;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Исчезает в тенях, повышая уклонение и готовя засаду.";
+    }
+
+    @Override
+    public Ability clone() {
+        return new Vanish();
+    }
 }

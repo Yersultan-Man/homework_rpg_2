@@ -1,5 +1,7 @@
 package com.narxoz.rpg.loot;
 
+import java.util.List;
+
 /**
  * Interface for enemy loot/drop tables in the RPG system.
  *
@@ -17,29 +19,17 @@ package com.narxoz.rpg.loot;
  * Loot tables must be DEEP-COPYABLE! When you clone an enemy,
  * its loot table must be an independent copy. Otherwise, modifying
  * a cloned enemy's loot will affect the original.
- *
- * TODO: Define what all loot tables have in common.
- * Think about:
- * - What items does the enemy drop?
- * - How much gold and experience are awarded?
- * - How should loot be displayed?
- * - How should loot tables be cloned?
- *
- * Consider methods like:
- * - List<String> getItems()
- * - int getGoldDrop()
- * - int getExperienceDrop()
- * - String getLootInfo()
- * - LootTable clone()   <-- Critical for Prototype pattern!
  */
 public interface LootTable {
 
-    // TODO: Define loot table behavior methods
-    // Consider:
-    // - List<String> getItems()
-    // - int getGoldDrop()
-    // - int getExperienceDrop()
-    // - String getLootInfo()
-    // - LootTable clone()  <-- IMPORTANT for deep copying!
+    List<String> getItems();
+
+    int getGoldDrop();
+
+    int getExperienceDrop();
+
+    String getLootInfo();
+
+    LootTable clone();  // Critical for Prototype pattern!
 
 }

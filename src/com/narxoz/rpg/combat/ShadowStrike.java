@@ -1,9 +1,24 @@
 package com.narxoz.rpg.combat;
 
-public class ShadowStrike extends AbstractAbility {
+public class ShadowStrike implements Ability {
 
-    public ShadowStrike() {
-        super("Shadow Strike", 60, "Deals high shadow damage to a single target and applies blind effect.");
+    @Override
+    public String getName() {
+        return "Теневой удар";
     }
 
+    @Override
+    public int getDamage() {
+        return 120;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Быстрый удар из тени, наносящий высокий урон одной цели и ослепляющий.";
+    }
+
+    @Override
+    public Ability clone() {
+        return new ShadowStrike();
+    }
 }

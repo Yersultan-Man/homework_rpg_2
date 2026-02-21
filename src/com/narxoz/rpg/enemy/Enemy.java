@@ -86,4 +86,27 @@ public interface Enemy {
     // Test your clone: modify the clone's abilities.
     // Does the original change? If yes → your copy is too shallow!
 
+    String getName();
+
+    int getHealth();
+
+    int getDamage();
+
+    int getDefense();
+
+    int getSpeed();
+
+    List<Ability> getAbilities();
+
+    LootTable getLootTable();
+
+    void displayInfo();
+
+    Enemy clone();  // For Prototype pattern, with DEEP COPY!
+
+    // Добавлены для Prototype variants: модификация клонов
+    void multiplyStats(double multiplier);
+
+    void addAbility(Ability ability);
+
 }

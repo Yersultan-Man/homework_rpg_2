@@ -1,9 +1,24 @@
 package com.narxoz.rpg.combat;
 
-public class FrostBreath extends AbstractAbility {
+public class FrostBreath implements Ability {
 
-    public FrostBreath() {
-        super("Frost Breath", 40, "Deals ice damage and slows the target's movement.");
+    @Override
+    public String getName() {
+        return "Дыхание мороза";
     }
 
+    @Override
+    public int getDamage() {
+        return 90;
+    }
+
+    @Override
+    public String getDescription() {
+        return "Выдыхает морозный воздух, нанося урон и замедляя врагов.";
+    }
+
+    @Override
+    public Ability clone() {
+        return new FrostBreath();
+    }
 }
