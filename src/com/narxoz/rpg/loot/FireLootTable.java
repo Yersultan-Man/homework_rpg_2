@@ -6,11 +6,13 @@ import java.util.List;
 
 public class FireLootTable implements LootTable {
 
+    private static final List<String> ITEMS = List.of("Fire Gem", "Dragon Scale", "Flame Rune");
+
     @Override
 
     public List<String> getItems() {
 
-        return new ArrayList<>(List.of("Fire Gem", "Dragon Scale", "Flame Rune"));
+        return new ArrayList<>(ITEMS);
 
     }
 
@@ -34,7 +36,7 @@ public class FireLootTable implements LootTable {
 
     public String getLootInfo() {
 
-        return "Fire-themed loot: " + String.join(", ", getItems()) + " | Gold: " + getGoldDrop() + " | XP: " + getExperienceDrop();
+        return "Огненная добыча: " + String.join(", ", getItems()) + " | Золото: " + getGoldDrop() + " | Опыт: " + getExperienceDrop();
 
     }
 

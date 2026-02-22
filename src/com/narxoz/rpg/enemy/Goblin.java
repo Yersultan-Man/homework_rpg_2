@@ -1,6 +1,7 @@
 package com.narxoz.rpg.enemy;
 
 import com.narxoz.rpg.combat.Ability;
+import com.narxoz.rpg.combat.FlameBreath;
 import com.narxoz.rpg.loot.LootTable;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class Goblin extends AbstractEnemy {
         // Default abilities and loot can be added here if needed
     }
 
-    Goblin(String name, int health, int damage, int defense, int speed, List<Ability> abilities, LootTable lootTable) {
+    public Goblin(String name, int health, int damage, int defense, int speed, List<Ability> abilities, LootTable lootTable) {
         super(name, health, damage, defense, speed, abilities, lootTable);
     }
 
@@ -69,6 +70,11 @@ public class Goblin extends AbstractEnemy {
         }
         LootTable copiedLoot = getLootTable() != null ? getLootTable().clone() : null;
         return new Goblin(getName(), getHealth(), getDamage(), getDefense(), getSpeed(), copiedAbilities, copiedLoot);
+    }
+
+    @Override
+    public void addAbility(FlameBreath flameBreath) {
+
     }
 
 }

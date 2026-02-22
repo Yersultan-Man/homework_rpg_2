@@ -38,6 +38,28 @@ public class EnemyDirector {
 
     public Enemy createRaidBoss(EnemyComponentFactory factory) {
 
+        String element = "OTHER";
+
+        if (!factory.createAbilities().isEmpty()) {
+
+            String firstAbility = factory.createAbilities().get(0).getName();
+
+            if (firstAbility.contains("Fire") || firstAbility.contains("Flame")) {
+
+                element = "FIRE";
+
+            } else if (firstAbility.contains("Frost") || firstAbility.contains("Ice")) {
+
+                element = "ICE";
+
+            } else if (firstAbility.contains("Shadow") || firstAbility.contains("Vanish")) {
+
+                element = "SHADOW";
+
+            }
+
+        }
+
         return builder
 
                 .setName("Raid Boss Dragon")
@@ -50,7 +72,7 @@ public class EnemyDirector {
 
                 .setSpeed(50)
 
-                .setElement(factory.createAbilities().get(0).getName().contains("Fire") ? "FIRE" : "OTHER")  // Simple theme match
+                .setElement(element)
 
                 .setAbilities(factory.createAbilities())
 
@@ -73,7 +95,5 @@ public class EnemyDirector {
                 .build();
 
     }
-
-    // Can add more presets like createElite, createMiniBoss
 
 }

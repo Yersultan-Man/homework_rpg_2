@@ -92,7 +92,7 @@ public class BasicEnemyBuilder implements EnemyBuilder {
 
     public EnemyBuilder addAbility(Ability ability) {
 
-        abilities.add(ability);
+        this.abilities.add(ability);
 
         return this;
 

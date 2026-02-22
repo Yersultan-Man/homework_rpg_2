@@ -31,9 +31,13 @@ public abstract class AbstractAbility implements Ability {
         return description;
     }
     @Override
-    public Ability clone() throws CloneNotSupportedException {
-        // Since fields are immutable primitives/strings, shallow copy is sufficient (deep for simple objects)
-        return (Ability) super.clone();
+    public Ability clone() {
+        // Since fields are immutable, simple new instance or shallow OK
+        try {
+            return (Ability) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e); // wrap, but shouldn't happen
+        }
     }
 
 }

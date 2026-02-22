@@ -3,6 +3,7 @@ import com.narxoz.rpg.builder.BasicEnemyBuilder;
 import com.narxoz.rpg.builder.BossEnemyBuilder;
 import com.narxoz.rpg.builder.EnemyBuilder;
 import com.narxoz.rpg.builder.EnemyDirector;
+import com.narxoz.rpg.combat.FlameBreath;
 import com.narxoz.rpg.enemy.Enemy;
 import com.narxoz.rpg.factory.EnemyComponentFactory;
 import com.narxoz.rpg.factory.FireComponentFactory;
@@ -23,118 +24,101 @@ public class Main {
         EnemyComponentFactory shadowFactory = new ShadowComponentFactory();
 
         printFactoryComponents("Огонь", fireFactory);
-        printFactoryComponents("Лёд",   iceFactory);
-        printFactoryComponents("Тень",  shadowFactory);
+        printFactoryComponents("Лёд", iceFactory);
+        printFactoryComponents("Тень", shadowFactory);
 
         // ───────────────────────────────────────────────────────────────
-        // PART 2: BUILDER + FACTORY METHOD — создание врагов
+        // PART 2: BUILDER — сборка врагов
         // ───────────────────────────────────────────────────────────────
-        System.out.println("\nЧАСТЬ 2: BUILDER + FACTORY METHOD — Создание врагов");
+        System.out.println("\nЧАСТЬ 2: BUILDER — Пошаговая сборка врагов");
         System.out.println("───────────────────────────────────────────────\n");
-        // Простой враг через BasicEnemyBuilder
-        EnemyBuilder basicBuilder = new BasicEnemyBuilder();
-        Enemy forestGoblin = basicBuilder
+
+        Enemy goblin = new BasicEnemyBuilder()
                 .setName("Лесной Гоблин")
-                .setHealth(120)
-                .setDamage(18)
-                .setDefense(6)
-                .setSpeed(40)
-                .setAbilities(fireFactory.createAbilities())
-                .setLootTable(fireFactory.createLootTable())
+                .setHealth(100)
+                .setDamage(15)
+                .setDefense(5)
+                .setSpeed(35)
+                .setAbilities(shadowFactory.createAbilities())
+                .setLootTable(shadowFactory.createLootTable())
                 .build();
-        System.out.println("Создан простой враг (BasicEnemyBuilder):");
-        forestGoblin.displayInfo();
-        System.out.println();
-        // Сложный босс через BossEnemyBuilder + тематическая фабрика
-        EnemyBuilder bossBuilder = new BossEnemyBuilder();
-        Enemy fireDragon = bossBuilder
-                .setName("Древний Огненный Дракон")
-                .setHealth(48000)
-                .setDamage(480)
-                .setDefense(180)
-                .setSpeed(45)
-                .setElement("ОГОНЬ")
+        goblin.displayInfo();
+
+        Enemy dragon = new BossEnemyBuilder()
+                .setName("Огненный Дракон")
+                .setHealth(50000)
+                .setDamage(500)
+                .setDefense(200)
+                .setSpeed(50)
+                .setElement("FIRE")
                 .setAbilities(fireFactory.createAbilities())
                 .setLootTable(fireFactory.createLootTable())
                 .setAIBehavior(fireFactory.createAIBehavior())
-                .addPhase(1, 48000)
-                .addPhase(2, 32000)
-                .addPhase(3, 16000)
+                .addPhase(1, 50000)
+                .addPhase(2, 30000)
+                .addPhase(3, 15000)
                 .setCanFly(true)
                 .setHasBreathAttack(true)
-                .setWingspan(18)
+                .setWingspan(20)
                 .build();
-        System.out.println("Создан босс (BossEnemyBuilder + FireFactory):");
-        fireDragon.displayInfo();
-        System.out.println();
-        // Директор — пресеты
+        dragon.displayInfo();
+
+        // Director
         EnemyDirector director = new EnemyDirector(new BossEnemyBuilder());
-        Enemy shadowRaidBoss = director.createRaidBoss(shadowFactory);
-        System.out.println("Создан рейд-босс через Director + ShadowFactory:");
-        shadowRaidBoss.displayInfo();
-        System.out.println();
+        Enemy raidBoss = director.createRaidBoss(iceFactory);
+        raidBoss.displayInfo();
+
         // ───────────────────────────────────────────────────────────────
         // PART 3: PROTOTYPE — клонирование и варианты
         // ───────────────────────────────────────────────────────────────
+        // ЧАСТЬ 3: PROTOTYPE — Клонирование и варианты
         System.out.println("\nЧАСТЬ 3: PROTOTYPE — Клонирование и варианты");
         System.out.println("───────────────────────────────────────────────\n");
+
         EnemyRegistry registry = new EnemyRegistry();
-        // Регистрируем шаблоны
-        registry.registerTemplate("goblin", forestGoblin);
-        registry.registerTemplate("fire-dragon", fireDragon);
-        // Создаём элитного гоблина (2× характеристики + доп. способность)
+        registry.registerTemplate("goblin", goblin);
+        registry.registerTemplate("dragon", dragon);
+
         Enemy eliteGoblin = registry.createFromTemplate("goblin");
         eliteGoblin.multiplyStats(2.0);
-        eliteGoblin.addAbility(fireFactory.createAbilities().get(0)); // добавляем FlameBreath
+        eliteGoblin.addAbility(new FlameBreath()); // модификация клону
         System.out.println("Элитный Гоблин (клон + модификация):");
         eliteGoblin.displayInfo();
-        System.out.println();
-        // Проверяем, что оригинал не изменился (доказательство глубокого копирования)
-        System.out.println("Оригинальный гоблин после клонирования (должен быть без изменений):");
-        forestGoblin.displayInfo();
-        System.out.println();
-        // Клон дракона → чемпион (5× характеристики)
-        Enemy championDragon = registry.createFromTemplate("fire-dragon");
-        championDragon.multiplyStats(5.0);
-        System.out.println("Чемпион Дракон (клон ×5):");
-        championDragon.displayInfo();
-        System.out.println();
+
+        System.out.println("\nОригинальный Гоблин (не изменился, deep copy):");
+        goblin.displayInfo();
+
         // ───────────────────────────────────────────────────────────────
-        // PART 4: ВСЁ ВМЕСТЕ — полный пайплайн
+        // PART 4: ВСЕ ПАТТЕРНЫ ВМЕСТЕ
         // ───────────────────────────────────────────────────────────────
-        System.out.println("\nЧАСТЬ 4: ВСЁ ВМЕСТЕ — Полный пайплайн паттернов");
+        System.out.println("\nЧАСТЬ 4: ВСЕ ПАТТЕРНЫ ВМЕСТЕ");
         System.out.println("───────────────────────────────────────────────\n");
-        // 1. Abstract Factory → тематические компоненты
-        EnemyComponentFactory iceComp = new IceComponentFactory();
-        // 2. Builder + Factory Method → собираем босса
-        Enemy iceBoss = new BossEnemyBuilder()
-                .setName("Ледяной Владыка")
-                .setHealth(42000)
-                .setDamage(420)
-                .setDefense(160)
-                .setSpeed(50)
-                .setElement("ЛЁД")
-                .setAbilities(iceComp.createAbilities())
-                .setLootTable(iceComp.createLootTable())
-                .setAIBehavior(iceComp.createAIBehavior())
-                .addPhase(1, 42000)
-                .addPhase(2, 28000)
-                .addPhase(3, 14000)
-                .setCanFly(true)
-                .setHasBreathAttack(true)
-                .setWingspan(16)
+
+        Enemy demon = new BossEnemyBuilder()
+                .setName("Демон Тени")
+                .setHealth(80000)
+                .setDamage(800)
+                .setDefense(250)
+                .setSpeed(40)
+                .setElement("SHADOW")
+                .setAbilities(shadowFactory.createAbilities())
+                .setLootTable(shadowFactory.createLootTable())
+                .setAIBehavior(shadowFactory.createAIBehavior())
+                .addPhase(1, 80000)
+                .addPhase(2, 40000)
+                .addPhase(3, 20000)
+                .setCanFly(false)
+                .setHasBreathAttack(false)
+                .setWingspan(0)
                 .build();
-        // 3. Prototype → регистрируем и клонируем
-        registry.registerTemplate("ice-boss", iceBoss);
-        Enemy greaterIceBoss = registry.createFromTemplate("ice-boss");
-        greaterIceBoss.multiplyStats(1.8);
-        System.out.println("Оригинальный Ледяной Владыка:");
-        iceBoss.displayInfo();
-        System.out.println();
-        System.out.println("Усиленный Ледяной Владыка (клон ×1.8):");
-        greaterIceBoss.displayInfo();
+
+        registry.registerTemplate("demon", demon);
+        Enemy greaterDemon = registry.createFromTemplate("demon");
+        greaterDemon.multiplyStats(1.5);
+        greaterDemon.displayInfo();
+
         // ───────────────────────────────────────────────────────────────
-        // Итоговая сводка
+        // СВОДКА
         // ───────────────────────────────────────────────────────────────
         System.out.println("\n═══════════════════════════════════════════════");
         System.out.println("СВОДКА ИСПОЛЬЗОВАННЫХ ПАТТЕРНОВ");

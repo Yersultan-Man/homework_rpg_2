@@ -6,30 +6,25 @@ import com.narxoz.rpg.loot.LootTable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Abstract class for shared enemy logic.
- * Provides encapsulation (private fields + getters), inheritance base.
- * Public methods for Prototype variants (multiplyStats, addAbility) — чтобы модифицировать клоны в demo.
- */
 public abstract class AbstractEnemy implements Enemy {
 
-    private String name;
-    private int health;
-    private int damage;
-    private int defense;
-    private int speed;
-    private List<Ability> abilities = new ArrayList<>();
-    private LootTable lootTable;
+    protected String name;
+    protected int health;
+    protected int damage;
+    protected int defense;
+    protected int speed;
+    protected List<Ability> abilities = new ArrayList<>();
+    protected LootTable lootTable;
 
     protected AbstractEnemy(String name, int health, int damage, int defense, int speed, List<Ability> abilities, LootTable lootTable) {
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Name required");
+        if (health <= 0) throw new IllegalArgumentException("Health positive");
         this.name = name;
-        setHealth(health);  // Валидация состояния
+        this.health = health;
         this.damage = damage;
         this.defense = defense;
         this.speed = speed;
-        if (abilities != null) {
-            this.abilities.addAll(abilities);
-        }
+        if (abilities != null) this.abilities.addAll(abilities);
         this.lootTable = lootTable;
     }
 
@@ -60,7 +55,7 @@ public abstract class AbstractEnemy implements Enemy {
 
     @Override
     public List<Ability> getAbilities() {
-        return new ArrayList<>(abilities);  // Защитная копия для инкапсуляции
+        return new ArrayList<>(abilities); // defensive copy
     }
 
     @Override
@@ -69,51 +64,32 @@ public abstract class AbstractEnemy implements Enemy {
     }
 
     @Override
-    public abstract void displayInfo();  // Subclasses override for extra info
-
-    @Override
-    public abstract Enemy clone();  // Subclasses implement deep copy
-
-    // Public для Prototype: модификация клонов (state transitions с валидацией)
-    @Override
-    public void multiplyStats(double multiplier) {
-        if (multiplier <= 0) {
-            throw new IllegalArgumentException("Multiplier must be positive");
+    public void displayInfo() {
+        System.out.println("=== " + name + " ===");
+        System.out.println("Health: " + health + " | Damage: " + damage + " | Defense: " + defense + " | Speed: " + speed);
+        System.out.println("Abilities:");
+        for (Ability a : abilities) {
+            System.out.println("- " + a.getName() + ": " + a.getDescription());
         }
-        setHealth((int) (health * multiplier));
-        this.damage = (int) (damage * multiplier);
-        this.defense = (int) (defense * multiplier);
-        this.speed = (int) (speed * multiplier);
+        if (lootTable != null) {
+            System.out.println("Loot: " + lootTable.getLootInfo());
+        }
     }
 
-    @Override
-    public void addAbility(Ability ability) {
-        if (ability == null) {
-            throw new IllegalArgumentException("Ability cannot be null");
-        }
+    public void multiplyStats(double multiplier) {
+        if (multiplier <= 0) throw new IllegalArgumentException("Multiplier positive");
+        health = (int) (health * multiplier);
+        damage = (int) (damage * multiplier);
+        defense = (int) (defense * multiplier);
+        speed = (int) (speed * multiplier);
+    }
+
+    protected void addAbility(Ability ability) {
+        if (ability == null) throw new IllegalArgumentException("Ability not null");
         abilities.add(ability);
     }
 
-    // Protected setter для internal state checks (encapsulation)
-    protected void setHealth(int health) {
-        if (health <= 0) {
-            throw new IllegalArgumentException("Health must be positive");
-        }
-        this.health = health;
-    }
-
-    // Другие protected setters, если нужно (например, setDamage и т.д.)
-    protected void setDamage(int damage) {
-        this.damage = damage;
-    }
-
-    protected void setDefense(int defense) {
-        this.defense = defense;
-    }
-
-    protected void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
+    @Override
+    public abstract Enemy clone();
 }
 
